@@ -24,21 +24,21 @@ void loop() {
   
   // inflate if light pressure
   if (sensor < 400 && state != BLOWING) {
-    switchOnPump(2, 100);   // Turn on blow pump
+    switchOnPump(2, 100);// turn on blow pump
     switchOffPump(1);
     blow();
     state = BLOWING;
   }
 
-  // Deflate if heavy pressure (sensor value > 700)
+  // deflate if heavy pressure
   else if (sensor > 700 && state != SUCKING) {
-    switchOnPump(1, 100);   // Turn on suck pump
+    switchOnPump(1, 100);// yurn on suck pump
     switchOffPump(2);
     suck();
     state = SUCKING;
   }
 
-  // Vent if in-between (medium pressure)
+  //if in-between, vent (medium )
   else if (sensor >= 400 && sensor <= 700 && state != VENTING) {
     switchOffPumps();
     vent();
