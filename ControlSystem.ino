@@ -13,17 +13,18 @@ int sensorpin = A0;
 int sensor;
 
 void setup() {
+  Serial.begin(9600);
   initializePins();
 }
 
 void loop() {
   sensor = analogRead(sensorpin);
   Serial.println(sensor);
-
+  
   showPressure();
   
   // inflate if light pressure
-  if (sensor < 400 && state != BLOWING) {
+  if (sensor > 1 && sensor < 10 && state != BLOWING) {
     switchOnPump(2, 100);// turn on blow pump
     switchOffPump(1);
     blow();
@@ -31,15 +32,15 @@ void loop() {
   }
 
   // deflate if heavy pressure
-  else if (sensor > 700 && state != SUCKING) {
-    switchOnPump(1, 100);// yurn on suck pump
+  else if (sensor > 30 && state != SUCKING) {
+    switchOnPump(1, 100);// turn on suck pump
     switchOffPump(2);
     suck();
     state = SUCKING;
   }
 
   //if in-between, vent (medium )
-  else if (sensor >= 400 && sensor <= 700 && state != VENTING) {
+  else if (sensor < 1 || sensor >= 10 && sensor <= 30 && state != VENTING) {
     switchOffPumps();
     vent();
     state = VENTING;
