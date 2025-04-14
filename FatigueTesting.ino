@@ -6,32 +6,40 @@
 int sensorpin = A0;
 int sensor;
 int atmospheric_pressure = 508;
-int threshold = 8;
-
-#define valvePin 6  // Solenoid valve pin
+int cycle_number = 0;
 
 void setup() {
   Serial.begin(9600);
   initializePins();
-  pinMode(valvePin, OUTPUT);
-  digitalWrite(valvePin, LOW); // Keep valve closed initially
 }
 
 void loop() {
-  // === Inflate bladder ===
-  switchOnPump(2, 100);  // Pump 2 inflates
-  switchOffPump(1);
-  digitalWrite(valvePin, LOW); 
-  delay(3000); // Inflate duration 
-  switchOffPumps();
+  Serial.print("Cycle #");
+  Serial.println(++cycle_number);
 
-  delay(3000);  // Hold for 3 seconds
+  // Inflate
+  Serial.println("Inflating...");
+  switchOnPump(2, 100); // Inflate pump ON
+  switchOffPump(1);   
+  blow();
+  delay(3000);          // Hold for 3 seconds
 
-  // === Deflate ===
-  digitalWrite(valvePin, HIGH); // Open valve
-  delay(2000);
-  digitalWrite(valvePin, LOW);  // Close valve
+  // Deflate
+  Serial.println("Deflating...");
+  switchOnPump(1, 100); // Suck pump ON
+  switchOffPump(2);    
+  suck();
+  delay(1000);          // Run suck for a short burst (adjust if needed)
+  switchOffPumps();     // Stop both pumps
 
-  delay(5000);  // Wait 5 seconds after deflation
+  // // Wait 5 seconds and record pressure for creep assessment
+  // Serial.println("Waiting for 5s to assess creep...");
+  // delay(5000);
+  // sensor = analogRead(sensorpin);
+  // Serial.print("Residual pressure reading (creep): ");
+  // Serial.println(sensor);
   
+  // Rest before next cycle
+  Serial.println("Resting 5s before next cycle...");
+  delay(5000);
 }
