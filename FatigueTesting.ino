@@ -18,27 +18,20 @@ void setup() {
 }
 
 void loop() {
-  // === Step 1: Inflate bladder ===
+  // === Inflate bladder ===
   switchOnPump(2, 100);  // Pump 2 inflates
-  switchOffPump(1);      // Ensure suck pump is off
-  digitalWrite(valvePin, LOW); // Ensure valve is closed
-  delay(3000); // Inflate duration (you can replace this with pressure-based logic if needed)
+  switchOffPump(1);
+  digitalWrite(valvePin, LOW); 
+  delay(3000); // Inflate duration 
   switchOffPumps();
 
-  // === Step 2: Hold pressure ===
   delay(3000);  // Hold for 3 seconds
 
-  // === Step 3: Deflate ===
+  // === Deflate ===
   digitalWrite(valvePin, HIGH); // Open valve
-  delay(2000);                  // Valve stays open for 2 seconds
+  delay(2000);
   digitalWrite(valvePin, LOW);  // Close valve
 
-  // === Step 4: Wait and record creep ===
   delay(5000);  // Wait 5 seconds after deflation
-  sensor = analogRead(sensorpin);
-  Serial.print("Creep pressure reading: ");
-  Serial.println(sensor);
-
-  // === Step 5: Rest ===
-  delay(5000);  // Wait 5 seconds before next cycle
+  
 }
