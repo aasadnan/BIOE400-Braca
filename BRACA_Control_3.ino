@@ -5,16 +5,16 @@
 
 int state = UN_KNOWN;
 
-int sensorpin = A0;
+int sensorpin = A9;
 int sensor;
 
 // === Pressure Control Parameters ===
-float targetPressure = 120.0;         // Desired pressure in mmHg
+float targetPressure = 30.0;         // Desired pressure in mmHg
 float pressureTolerance = 2.0;        // Acceptable error margin (mmHg)
 
 // === Calibration constants for voltage-to-pressure conversion ===
-const float A = 0.4225;
-const float B = 1.0453;
+const float A = 0.238;
+const float B = 1.19;
 
 void setup() {
   Serial.begin(9600);
