@@ -45,6 +45,8 @@ void loop() {
     switchOffPumps();
     vent();
     emergencyStop = true;
+    pixels.setPixelColor(i, pixels.Color(0, 150, 0));
+    pixels.show();
   }
   return;
   }
