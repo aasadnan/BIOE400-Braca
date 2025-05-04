@@ -5,7 +5,7 @@
 
 int state = UN_KNOWN;
 
-int sensorpin = A2;
+int sensorpin = A0;
 int sensor;
 
 // === Pressure Control Parameters ===
@@ -15,6 +15,9 @@ float pressureTolerance = 2.0;        // Acceptable error margin (mmHg)
 // === Calibration constants for voltage-to-pressure conversion ===
 const float A = 0.238;
 const float B = 1.19;
+
+float maxSafePressure = 50.0; 
+bool emergencyStop = false;  
 
 void setup() {
   Serial.begin(9600);
@@ -35,6 +38,16 @@ void loop() {
   Serial.print(" | Voltage: "); Serial.print(voltage, 3);
   Serial.print(" V | Pressure: "); Serial.print(pressure, 2);
   Serial.println(" mmHg");
+
+  if (pressure >= maxSafePressure) {
+  if (!emergencyStop) {
+    Serial.println("Pressure exceeded safe limit. Shutting down system. !!!");
+    switchOffPumps();
+    vent();
+    emergencyStop = true;
+  }
+  return;
+  }
 
   // Calculate pressure error
   float error = targetPressure - pressure;
