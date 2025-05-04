@@ -45,8 +45,10 @@ void loop() {
     switchOffPumps();
     vent();
     emergencyStop = true;
-    pixels.setPixelColor(i, pixels.Color(0, 150, 0));
-    pixels.show();
+    for(int i=0; i<NUMPIXELS; i++) {
+      pixels.setPixelColor(i, pixels.Color(0, 150, 0));
+      pixels.show();
+    }
   }
   return;
   }
