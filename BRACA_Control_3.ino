@@ -5,12 +5,12 @@
 
 int state = UN_KNOWN;
 
-int sensorpin = A0;
+int sensorpin = A2;
 int sensor;
 
 // === Pressure Control Parameters ===
 float targetPressure = 30.0;         // Desired pressure in mmHg
-float pressureTolerance = 5.0;        // Acceptable error margin (mmHg)
+float pressureTolerance = 2.0;        // Acceptable error margin (mmHg)
 
 // === Calibration constants for voltage-to-pressure conversion ===
 const float A = 0.238;
@@ -51,6 +51,8 @@ void loop() {
 
   // Calculate pressure error
   float error = targetPressure - pressure;
+  int power = (error / 10 ) * 100;
+  power = constrain(power, 0, 100);
 
   // === Feedback Control Logic ===
   if (abs(error) < pressureTolerance) {
@@ -63,7 +65,7 @@ void loop() {
   } else if (error > 0) {
     // Pressure too low — inflate
     if (state != BLOWING) {
-      switchOnPump(2, 100); // Inflate
+      switchOnPump(2, power); // Inflate
       switchOffPump(1);
       blow();
       state = BLOWING;
@@ -71,7 +73,7 @@ void loop() {
   } else {
     // Pressure too high — deflate
     if (state != SUCKING) {
-      switchOnPump(1, 100); // Deflate
+      switchOnPump(1, power); // Deflate
       switchOffPump(2);
       suck();
       state = SUCKING;
