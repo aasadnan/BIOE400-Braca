@@ -10,7 +10,7 @@ int sensor;
 
 // === Pressure Control Parameters ===
 float targetPressure = 30.0;         // Desired pressure in mmHg
-float pressureTolerance = 2.0;        // Acceptable error margin (mmHg)
+float pressureTolerance = 5.0;        // Acceptable error margin (mmHg)
 
 // === Calibration constants for voltage-to-pressure conversion ===
 const float A = 0.238;
