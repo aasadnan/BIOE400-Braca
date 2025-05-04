@@ -5,7 +5,7 @@
 
 int state = UN_KNOWN;
 
-int sensorpin = A9;
+int sensorpin = A2;
 int sensor;
 
 // === Pressure Control Parameters ===
