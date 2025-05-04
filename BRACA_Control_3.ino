@@ -1,17 +1,15 @@
 #include "programmable_air.h"
 #include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h>
+
+#define LED_PIN 6
+#define NUMPIXELS 1
+
+Adafruit_NeoPixel pixels(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+
 
 #define DEBUG 1
-#define PIN 1
-
-// How many NeoPixels are attached to the Arduino?
-#define NUMPIXELS 3
-
-// When setting up the NeoPixel library, we tell it how many pixels,
-// and which pin to use to send signals. Note that for older NeoPixel
-// strips you might need to change the third parameter -- see the
-// strandtest example for more information on possible values.
-Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 int state = UN_KNOWN;
 
@@ -32,6 +30,10 @@ bool emergencyStop = false;
 void setup() {
   Serial.begin(9600);
   initializePins();
+  pixels.begin();
+  pixels.setBrightness(50); // optional: adjust brightness (0–255)
+  pixels.show();            // initialize all pixels to 'off'
+
 }
 
 void loop() {
@@ -55,10 +57,8 @@ void loop() {
     switchOffPumps();
     vent();
     emergencyStop = true;
-    for(int i=0; i<NUMPIXELS; i++) {
-      pixels.setPixelColor(i, pixels.Color(0, 150, 0));
-      pixels.show();
-    }
+    pixels.setPixelColor(0, pixels.Color(255, 0, 0)); // red
+    pixels.show();
   }
   return;
   }
