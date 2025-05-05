@@ -47,8 +47,6 @@ void loop() {
     // Within acceptable range — vent
     if (state != VENTING) {
       switchOffPumps();
-      //vent();
-      //state = VENTING;
     }
   } else if (error > 0) {
     // Pressure too low — inflate
