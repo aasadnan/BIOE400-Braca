@@ -1,16 +1,15 @@
-#include "programmable_air.h"
-#include <Adafruit_NeoPixel.h>
+#include <math.h>
 
-#define DEBUG 1
+// === LED Pins ===
+const int RED_LED = 9;    // Too high pressure
+const int ORANGE_LED = 7; // Too low pressure
+const int GREEN_LED = 8;  // Within target range
 
-int state = UN_KNOWN;
-
-int sensorpin = A2;
+int sensorpin = A0;
 int sensor;
-
 // === Pressure Control Parameters ===
 float targetPressure = 30.0;         // Desired pressure in mmHg
-float pressureTolerance = 5.0;        // Acceptable error margin (mmHg)
+float pressureTolerance = 5.0;       // Acceptable error margin (mmHg)
 
 // === Calibration constants for voltage-to-pressure conversion ===
 const float A = 0.238;
@@ -18,7 +17,16 @@ const float B = 1.19;
 
 void setup() {
   Serial.begin(9600);
-  initializePins();
+
+  // Set LED pins as output
+  pinMode(RED_LED, OUTPUT);
+  pinMode(ORANGE_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+
+  // Turn off all LEDs initially
+  digitalWrite(RED_LED, LOW);
+  digitalWrite(ORANGE_LED, LOW);
+  digitalWrite(GREEN_LED, LOW);
 }
 
 void loop() {
@@ -29,42 +37,33 @@ void loop() {
   // Convert voltage to pressure using exponential model
   float pressure = A * exp(B * voltage);
 
-  // Display pressure data
-  showPressure();
+  // Debug info
   Serial.print("Sensor: "); Serial.print(sensor);
   Serial.print(" | Voltage: "); Serial.print(voltage, 3);
   Serial.print(" V | Pressure: "); Serial.print(pressure, 2);
   Serial.println(" mmHg");
 
-  // Calculate pressure error
+  // Calculate error
   float error = targetPressure - pressure;
-  int power = (error / 10 ) * 100;
- //power = constrain(power, 0, 100);
 
-
-  // === Feedback Control Logic ===
+  // === LED Control Logic ===
   if (abs(error) < pressureTolerance) {
-    // Within acceptable range — vent
-    if (state != VENTING) {
-      switchOffPumps();
-    }
+    // Within acceptable range — GREEN
+    setLEDState(GREEN_LED);
   } else if (error > 0) {
-    // Pressure too low — inflate
-    if (state != BLOWING) {
-      switchOnPump(2, power); // Inflate
-      switchOffPump(1);
-      blow();
-      state = BLOWING;
-    }
+    // Pressure too low — ORANGE
+    setLEDState(ORANGE_LED);
   } else {
-    // Pressure too high — deflate
-    if (state != SUCKING) {
-      switchOnPump(1, power); // Deflate
-      switchOffPump(2);
-      suck();
-      state = SUCKING;
-    }
+    // Pressure too high — RED
+    setLEDState(RED_LED);
   }
 
-  delayWhileReadingPressure(200); // Delay before next reading
+  delay(200); // Delay between readings
+}
+
+// Helper to turn on only one LED at a time
+void setLEDState(int ledPin) {
+  digitalWrite(RED_LED, ledPin == RED_LED ? HIGH : LOW);
+  digitalWrite(ORANGE_LED, ledPin == ORANGE_LED ? HIGH : LOW);
+  digitalWrite(GREEN_LED, ledPin == GREEN_LED ? HIGH : LOW);
 }
